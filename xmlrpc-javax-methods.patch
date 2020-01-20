@@ -1,0 +1,128 @@
+diff -up ./server/src/main/java/org/apache/xmlrpc/webserver/HttpServletRequestImpl.java.fix ./server/src/main/java/org/apache/xmlrpc/webserver/HttpServletRequestImpl.java
+--- ./server/src/main/java/org/apache/xmlrpc/webserver/HttpServletRequestImpl.java.fix	2012-07-24 14:49:54.000000000 -0400
++++ ./server/src/main/java/org/apache/xmlrpc/webserver/HttpServletRequestImpl.java	2012-07-24 18:20:17.000000000 -0400
+@@ -31,6 +31,7 @@ import java.net.URLDecoder;
+ import java.security.Principal;
+ import java.util.ArrayList;
+ import java.util.Collections;
++import java.util.Collection;
+ import java.util.Enumeration;
+ import java.util.HashMap;
+ import java.util.Iterator;
+@@ -41,8 +42,15 @@ import java.util.StringTokenizer;
+ 
+ import javax.servlet.RequestDispatcher;
+ import javax.servlet.ServletInputStream;
++import javax.servlet.DispatcherType;
++import javax.servlet.AsyncContext;
++import javax.servlet.ServletContext;
++import javax.servlet.ServletRequest;
++import javax.servlet.ServletResponse;
+ import javax.servlet.http.Cookie;
++import javax.servlet.http.Part;
+ import javax.servlet.http.HttpServletRequest;
++import javax.servlet.http.HttpServletResponse;
+ import javax.servlet.http.HttpSession;
+ 
+ import org.apache.xmlrpc.common.XmlRpcStreamConfig;
+@@ -66,6 +74,7 @@ public class HttpServletRequestImpl impl
+ 	private String queryString;
+ 	private String httpVersion;
+ 	private final Map headers = new HashMap();
++	private final Map parts = new HashMap();
+ 	private final Map attributes = new HashMap();
+ 	private Map parameters;
+ 	private String characterEncoding;
+@@ -227,6 +236,12 @@ public class HttpServletRequestImpl impl
+ 		return Collections.enumeration(list);
+ 	}
+ 
++	public Part getPart(String name) { throw new IllegalStateException("Not implemented"); }
++
++	public Collection getParts() { throw new IllegalStateException("Not implemented"); }
++
++	public boolean authenticate (HttpServletResponse response) { throw new IllegalStateException("Not implemented"); }
++
+ 	public int getIntHeader(String pHeader) {
+ 		String s = getHeader(pHeader);
+ 		return s == null ? -1 : Integer.parseInt(s);
+@@ -242,6 +257,10 @@ public class HttpServletRequestImpl impl
+ 
+ 	public String getRemoteUser() { throw new IllegalStateException("Not implemented"); }
+ 
++	public void login(String username, String password) { throw new IllegalStateException("Not implemented"); }
++
++	public void logout() { throw new IllegalStateException("Not implemented"); }
++
+ 	public String getRequestURI() { return uri; }
+ 
+ 	public StringBuffer getRequestURL() {
+@@ -280,6 +299,20 @@ public class HttpServletRequestImpl impl
+ 		return sb;
+ 	}
+ 
++	public AsyncContext getAsyncContext() { throw new IllegalStateException("Not implemented"); }
++
++	public boolean isAsyncSupported() { return false; }
++
++	public boolean isAsyncStarted() { return false; }
++
++	public ServletContext getServletContext() { throw new IllegalStateException("Not implemented"); }
++
++	public AsyncContext startAsync(ServletRequest req, ServletResponse resp) { throw new IllegalStateException("Not implemented"); }
++
++	public AsyncContext startAsync() { throw new IllegalStateException("Not implemented"); }
++
++	public DispatcherType getDispatcherType() { throw new IllegalStateException("Not implemented"); }
++
+ 	public String getRequestedSessionId() { throw new IllegalStateException("Not implemented"); }
+ 
+ 	public String getServletPath() { return uri; }
+diff -up ./server/src/main/java/org/apache/xmlrpc/webserver/HttpServletResponseImpl.java.fix ./server/src/main/java/org/apache/xmlrpc/webserver/HttpServletResponseImpl.java
+--- ./server/src/main/java/org/apache/xmlrpc/webserver/HttpServletResponseImpl.java.fix	2012-07-24 14:49:46.000000000 -0400
++++ ./server/src/main/java/org/apache/xmlrpc/webserver/HttpServletResponseImpl.java	2012-07-24 15:22:31.000000000 -0400
+@@ -29,6 +29,8 @@ import java.util.Iterator;
+ import java.util.List;
+ import java.util.Locale;
+ import java.util.Map;
++import java.util.Collection;
++import java.util.Collections;
+ import java.util.StringTokenizer;
+ 
+ import javax.servlet.ServletOutputStream;
+@@ -84,7 +86,7 @@ public class HttpServletResponseImpl imp
+ 		}
+ 	}
+ 
+-	private String getHeader(String pHeader) {
++	public String getHeader(String pHeader) {
+ 		String key = pHeader.toLowerCase();
+ 		Object o = headers.get(key);
+ 		if (o == null) {
+@@ -101,6 +103,26 @@ public class HttpServletResponseImpl imp
+ 		}
+ 	}
+ 
++	public Collection getHeaderNames() {
++		return headers.keySet();
++	}
++
++	public Collection getHeaders(String pHeader) {
++		String key = pHeader.toLowerCase();
++		Object o = headers.get(key);
++		List list;
++		if (o instanceof List) {
++		list = (List) o;
++		} else {
++			list = Collections.singletonList(o);
++		}
++		return list;
++	}
++
++	public int getStatus() {
++		return status;
++	}
++
+ 	public void addIntHeader(String pHeader, int pValue) {
+ 		addHeader(pHeader, Integer.toString(pValue));
+ 	}
