@@ -1,6 +1,6 @@
 Name:       xmlrpc
 Version:    3.1.3
-Release:    7%{?dist}
+Release:    8%{?dist}
 Epoch:      1
 Summary:    Java XML-RPC implementation
 License:    ASL 2.0
@@ -111,6 +111,9 @@ sed -i 's/\r//' LICENSE.txt
 
 
 %changelog
+* Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 1:3.1.3-8
+- Mass rebuild 2013-12-27
+
 * Mon Aug 19 2013 Stanislav Ochotnicky <sochotnicky@redhat.com> - 1:3.1.3-7
 - Migrate away from mvn-rpmbuild (#997460)
 
