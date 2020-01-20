@@ -1,6 +1,6 @@
 Name:       xmlrpc
 Version:    3.1.3
-Release:    8%{?dist}
+Release:    9%{?dist}
 Epoch:      1
 Summary:    Java XML-RPC implementation
 License:    ASL 2.0
@@ -10,6 +10,7 @@ Source0:    http://www.apache.org/dist/ws/xmlrpc/sources/apache-xmlrpc-%{version
 Patch0:     %{name}-client-addosgimanifest.patch
 Patch1:     %{name}-common-addosgimanifest.patch
 Patch2:     %{name}-javax-methods.patch
+Patch3:     %{name}-disallow-deserialization-of-ex-serializable-tags.patch
 
 BuildRequires:  maven-local
 BuildRequires:  maven-resources-plugin
@@ -77,6 +78,7 @@ popd
 pushd common
 %patch1 -b .sav
 popd
+%patch3 -p1
 
 sed -i 's/\r//' LICENSE.txt
 
@@ -111,6 +113,10 @@ sed -i 's/\r//' LICENSE.txt
 
 
 %changelog
+* Wed May 23 2018 Michael Simacek <msimacek@redhat.com> - 1:3.1.3-9
+- Disallow deserialization of <ex:serializable> tags by default
+- Resolves: CVE-2016-5003
+
 * Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 1:3.1.3-8
 - Mass rebuild 2013-12-27
 
